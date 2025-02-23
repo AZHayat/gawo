@@ -62,32 +62,31 @@ class WorkOrderController extends Controller
 
     // Fungsi untuk pencarian WO via AJAX
     public function find(Request $request)
-{
-    $request->validate([
-        'nomor_wo' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'nomor_wo' => 'required|string',
+        ]);
 
-    $workOrder = WorkOrder::where('nomor_wo', $request->nomor_wo)->first();
+        $workOrder = WorkOrder::where('nomor_wo', $request->nomor_wo)->first();
 
-    if (!$workOrder) {
-        return response()->json(['error' => 'Nomor WO tidak ditemukan'], 404);
+        if (!$workOrder) {
+            return response()->json(['error' => 'Nomor WO tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'nomor_wo' => $workOrder->nomor_wo,
+            'nama_pemohon' => $workOrder->nama_pemohon,
+            'departemen' => $workOrder->departemen,
+            'tanggal_pembuatan' => Carbon::parse($workOrder->tanggal_pembuatan)->format('Y-m-d'),
+            'target_selesai' => Carbon::parse($workOrder->target_selesai)->format('Y-m-d'),
+            'deskripsi' => $workOrder->deskripsi,
+            'status' => $workOrder->status,
+            'tindakan' => $workOrder->tindakan,
+            'saran' => $workOrder->saran,
+            'jenis_pekerjaan' => $workOrder->jenis_pekerjaan, // Pastikan ini ada
+            'items' => $workOrder->items ? $workOrder->items->toArray() : [], // Pastikan dalam array
+        ]);
     }
-
-    return response()->json([
-        'nomor_wo' => $workOrder->nomor_wo,
-        'nama_pemohon' => $workOrder->nama_pemohon,
-        'departemen' => $workOrder->departemen,
-        'tanggal_pembuatan' => Carbon::parse($workOrder->tanggal_pembuatan)->format('Y-m-d'),
-        'target_selesai' => Carbon::parse($workOrder->target_selesai)->format('Y-m-d'),
-        'deskripsi' => $workOrder->deskripsi,
-        'status' => $workOrder->status,
-        'tindakan' => $workOrder->tindakan,
-        'saran' => $workOrder->saran,
-        'items' => $workOrder->items ? $workOrder->items->toArray() : [], // Pastikan dalam array
-    ]);
-}
-
-
 
     // Memproses update data WO
     public function update(Request $request)

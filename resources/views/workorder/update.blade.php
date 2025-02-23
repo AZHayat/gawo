@@ -91,6 +91,36 @@
                         <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" disabled></textarea>
                     </div>
 
+                    <!-- Jenis Pekerjaan -->
+                    <div class="form-group mt-3">
+                        <label>Jenis Pekerjaan</label><br>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="jenis_pekerjaan[]" value="Maintenance Building" disabled>
+                            <label class="form-check-label">Maintenance Building</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="jenis_pekerjaan[]" value="Project" disabled>
+                            <label class="form-check-label">Project</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="jenis_pekerjaan[]" value="Cleaning" disabled>
+                            <label class="form-check-label">Cleaning</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="jenis_pekerjaan[]" value="Crafting" disabled>
+                            <label class="form-check-label">Crafting</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="jenis_pekerjaan[]" value="Ekspedisi" disabled>
+                            <label class="form-check-label">Ekspedisi</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pekerjaan_others" value="Others" disabled>
+                            <label class="form-check-label">Others</label>
+                        </div>
+                        <input type="text" class="form-control mt-2 d-none" id="jenis_pekerjaan_lainnya" name="jenis_pekerjaan_lainnya" placeholder="Isi Jenis Pekerjaan Lainnya" disabled>
+                    </div>
+
                     <!-- Tindakan -->
                     <div class="form-group mt-3">
                         <label for="tindakan">Tindakan</label>
@@ -172,8 +202,6 @@ $(document).ready(function () {
         $(this).closest('tr').remove();
     });
 
-
-
     // Cari WO
     $("#btnCariWO").click(function () { // ID sudah sesuai
         var nomorWO = $("#nomor_wo").val();
@@ -197,6 +225,13 @@ $(document).ready(function () {
                 $("#tindakan").val(response.tindakan || ''); 
                 $("#saran").val(response.saran || ''); 
 
+                // Isi checkbox jenis pekerjaan
+                if (response.jenis_pekerjaan) {
+                    response.jenis_pekerjaan.forEach(function (jenis) {
+                        $("input[name='jenis_pekerjaan[]'][value='" + jenis + "']").prop('checked', true);
+                    });
+                }
+
                 $("#tableBarang").empty(); // Pastikan tabel barang dikosongkan dulu
 
                 if (response.items && response.items.length > 0) {
@@ -213,33 +248,23 @@ $(document).ready(function () {
         });
     });
 
-    function tambahBarisBarang(nomor, nama, qty, unit, pr) {
-        let nomorOtomatis = $("#tableBarang tr").length + 1;
-        $("#tableBarang").append(`
-            <tr>
-                <td>${nomor || nomorOtomatis}</td>
-                <td><input type="text" name="barang[${nomorOtomatis}][nama_barang]" class="form-control" value="${nama}" required></td>
-                <td><input type="number" name="barang[${nomorOtomatis}][qty]" class="form-control" value="${qty}" required></td>
-                <td><input type="text" name="barang[${nomorOtomatis}][unit]" class="form-control" value="${unit}" required></td>
-                <td><input type="text" name="barang[${nomorOtomatis}][nomor_pr]" class="form-control" value="${pr}"></td>
-                <td><button type="button" class="btn btn-sm btn-danger btnHapusBarang">Hapus</button></td>
-            </tr>
-        `);
-    }
-
-    //TOmbol Edit
+    // Tombol Edit
     $("#btn-edit").click(function () {
-        // Aktifkan input yang sebelumnya disabled atau disabled
+        // Aktifkan input yang sebelumnya disabled atau readonly
         $("#nama_pemohon").removeAttr("disabled");
         $("#departemen").removeAttr("disabled");
         $("#tanggal_pembuatan").removeAttr("disabled");
         $("#target_selesai").removeAttr("disabled");
         $("#deskripsi").removeAttr("disabled");
 
+        // Aktifkan checkbox jenis pekerjaan
+        $("input[name='jenis_pekerjaan[]']").removeAttr("disabled");
+        $("#pekerjaan_others").removeAttr("disabled");
+        $("#jenis_pekerjaan_lainnya").removeAttr("disabled");
+
         // Beri efek visual agar terlihat bisa diedit
         $("#nama_pemohon, #departemen, #tanggal_pembuatan, #target_selesai, #deskripsi").addClass("border-blue-500");
     });
-
 
     // Tombol hapus
     $("#btn-hapus").click(function () {
@@ -267,8 +292,6 @@ $(document).ready(function () {
             });
         }
     });
-
-
 });
 </script>
 
