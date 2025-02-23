@@ -156,15 +156,15 @@
                     <br>
                     <!-- Tombol Submit -->
                     <div class="flex space-x-2">
-                        <button id="btn-simpan" class="bg-green-500 text-white px-4 py-2 rounded flex items-center">
+                        <button type="submit" id="btn-simpan" class="bg-green-500 text-white px-4 py-2 rounded flex items-center">
                             <i class="fas fa-save mr-2"></i> Simpan
                         </button>
 
-                        <button id="btn-edit" class="bg-blue-500 text-white px-4 py-2 rounded flex items-center">
+                        <button type="button" id="btn-edit" class="bg-blue-500 text-white px-4 py-2 rounded flex items-center">
                             <i class="fas fa-edit mr-2"></i> Edit
                         </button>
 
-                        <button id="btn-hapus" class="bg-red-500 text-white px-4 py-2 rounded flex items-center">
+                        <button type="button" id="btn-hapus" class="bg-red-500 text-white px-4 py-2 rounded flex items-center">
                             <i class="fas fa-trash-alt mr-2"></i> Hapus
                         </button>
                     </div>
@@ -192,7 +192,6 @@ $(document).ready(function () {
         `);
     }
 
-    
     //Tambah barang
     $('#btnTambahBarang').click(function () {
         tambahBarisBarang();
@@ -202,19 +201,12 @@ $(document).ready(function () {
         $(this).closest('tr').remove();
     });
 
-    // Cari WO
-    $("#btnCariWO").click(function () { // ID sudah sesuai
-        var nomorWO = $("#nomor_wo").val();
-
-        if (nomorWO === "") {
-            alert("Masukkan Nomor WO terlebih dahulu!");
-            return;
-        }
-
+    // Fetch WO data if nomor_wo is provided
+    function fetchWOData(nomorWO) {
         $.ajax({
             url: "{{ route('workorder.find') }}",
-            type: "POST", // Bisa diganti "GET" jika ingin lebih sederhana
-            data: { nomor_wo: nomorWO, _token: "{{ csrf_token() }}" }, 
+            type: "POST",
+            data: { nomor_wo: nomorWO, _token: "{{ csrf_token() }}" },
             success: function (response) {
                 $("#nama_pemohon").val(response.nama_pemohon);
                 $("#departemen").val(response.departemen);
@@ -246,6 +238,35 @@ $(document).ready(function () {
                 alert(xhr.responseJSON.error);
             }
         });
+    }
+
+    // Reset form and disable inputs
+    function resetForm() {
+        $("#woData").addClass("d-none");
+        $("#nama_pemohon").attr("disabled", true).val('');
+        $("#departemen").attr("disabled", true).val('');
+        $("#tanggal_pembuatan").attr("disabled", true).val('');
+        $("#target_selesai").attr("disabled", true).val('');
+        $("#deskripsi").attr("disabled", true).val('');
+        $("input[name='jenis_pekerjaan[]']").attr("disabled", true).prop('checked', false);
+        $("#pekerjaan_others").attr("disabled", true).prop('checked', false);
+        $("#jenis_pekerjaan_lainnya").attr("disabled", true).val('');
+        $("#tindakan").val('');
+        $("#saran").val('');
+        $("#tableBarang").empty();
+    }
+
+    // Cari WO
+    $("#btnCariWO").click(function () {
+        var nomorWO = $("#nomor_wo").val();
+
+        if (nomorWO === "") {
+            alert("Masukkan Nomor WO terlebih dahulu!");
+            return;
+        }
+
+        resetForm();
+        fetchWOData(nomorWO);
     });
 
     // Tombol Edit
@@ -292,6 +313,12 @@ $(document).ready(function () {
             });
         }
     });
+
+    // Check if nomor_wo is provided and fetch data
+    var nomorWO = $("#nomor_wo").val();
+    if (nomorWO) {
+        fetchWOData(nomorWO);
+    }
 });
 </script>
 

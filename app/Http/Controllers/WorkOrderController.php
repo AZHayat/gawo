@@ -74,6 +74,9 @@ class WorkOrderController extends Controller
             return response()->json(['error' => 'Nomor WO tidak ditemukan'], 404);
         }
 
+        $workOrderUpdate = WorkOrderUpdate::where('work_order_id', $workOrder->id)->latest()->first();
+        $workOrderItems = WorkOrderItem::where('work_order_id', $workOrder->id)->get();
+
         return response()->json([
             'nomor_wo' => $workOrder->nomor_wo,
             'nama_pemohon' => $workOrder->nama_pemohon,
@@ -82,10 +85,10 @@ class WorkOrderController extends Controller
             'target_selesai' => Carbon::parse($workOrder->target_selesai)->format('Y-m-d'),
             'deskripsi' => $workOrder->deskripsi,
             'status' => $workOrder->status,
-            'tindakan' => $workOrder->tindakan,
-            'saran' => $workOrder->saran,
-            'jenis_pekerjaan' => $workOrder->jenis_pekerjaan, // Pastikan ini ada
-            'items' => $workOrder->items ? $workOrder->items->toArray() : [], // Pastikan dalam array
+            'tindakan' => $workOrderUpdate ? $workOrderUpdate->tindakan : '',
+            'saran' => $workOrderUpdate ? $workOrderUpdate->saran : '',
+            'jenis_pekerjaan' => $workOrder->jenis_pekerjaan,
+            'items' => $workOrderItems,
         ]);
     }
 
