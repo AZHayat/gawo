@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderItem;
+use App\Models\WorkOrderUpdate;
 use Illuminate\Support\Carbon;
 
 class WorkOrderController extends Controller
@@ -108,6 +109,11 @@ class WorkOrderController extends Controller
         // Update data utama WO
         $workOrder->update([
             'status' => $request->status,
+        ]);
+
+        // Save tindakan and saran to work_order_updates table
+        WorkOrderUpdate::create([
+            'work_order_id' => $workOrder->id,
             'tindakan' => $request->tindakan,
             'saran' => $request->saran,
         ]);
