@@ -114,6 +114,9 @@ class WorkOrderController extends Controller
             'status' => $request->status,
         ]);
 
+        // Hapus entri sebelumnya di tabel work_order_updates
+        WorkOrderUpdate::where('work_order_id', $workOrder->id)->delete();
+
         // Save tindakan and saran to work_order_updates table
         WorkOrderUpdate::create([
             'work_order_id' => $workOrder->id,
@@ -128,7 +131,6 @@ class WorkOrderController extends Controller
             foreach ($request->items as $index => $item) {
                 WorkOrderItem::create([
                     'work_order_id' => $workOrder->id,
-                    'nomor' => $index + 1,
                     'nama_barang' => $item['nama_barang'],
                     'qty' => $item['qty'],
                     'unit' => $item['unit'],

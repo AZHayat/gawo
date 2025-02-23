@@ -183,10 +183,10 @@ $(document).ready(function () {
         $("#tableBarang").append(`
             <tr>
                 <td>${nomor || nomorOtomatis}</td>
-                <td><input type="text" name="barang[${nomorOtomatis}][nama_barang]" class="form-control" value="${nama}" required></td>
-                <td><input type="number" name="barang[${nomorOtomatis}][qty]" class="form-control" value="${qty}" required></td>
-                <td><input type="text" name="barang[${nomorOtomatis}][unit]" class="form-control" value="${unit}" required></td>
-                <td><input type="text" name="barang[${nomorOtomatis}][nomor_pr]" class="form-control" value="${pr}"></td>
+                <td><input type="text" name="items[${nomorOtomatis}][nama_barang]" class="form-control" value="${nama}" required></td>
+                <td><input type="number" name="items[${nomorOtomatis}][qty]" class="form-control" value="${qty}" required></td>
+                <td><input type="text" name="items[${nomorOtomatis}][unit]" class="form-control" value="${unit}" required></td>
+                <td><input type="text" name="items[${nomorOtomatis}][nomor_pr]" class="form-control" value="${pr}"></td>
                 <td><button type="button" class="btn btn-sm btn-danger btnHapusBarang">Hapus</button></td>
             </tr>
         `);
