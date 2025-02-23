@@ -23,10 +23,9 @@
             <h3>Update Work Order</h3>
         </div>
         <div class="card-body">
-        <form action="{{ route('workorder.update') }}" method="POST">
-    @csrf
-    @method('PATCH') <!-- Ganti dari POST ke PATCH -->
-
+            <form action="{{ route('workorder.update') }}" method="POST">
+                @csrf
+                @method('PATCH') <!-- Ganti dari POST ke PATCH -->
 
                 <!-- Nomor WO -->
                 <div class="form-group d-flex">
@@ -68,16 +67,13 @@
                             <option value="Others">Others</option>
                         </select>
                         <input type="text" class="form-control mt-2 d-none" id="departemen_lainnya" name="departemen_lainnya" placeholder="Isi Departemen Lainnya">
-                     </div>
-
-                     
+                    </div>
 
                     <!-- Tanggal Pembuatan -->
                     <div class="form-group mt-3">
                         <label for="tanggal_pembuatan">Tanggal Pembuatan</label>
                         <input type="date" class="form-control" id="tanggal_pembuatan" name="tanggal_pembuatan" value="{{ date('Y-m-d') }}" disabled>
                     </div>
-                    
 
                     <!-- Target Selesai -->
                     <div class="form-group mt-3">
@@ -175,151 +171,11 @@
     </div>
 </div>
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="workorder-find-url" content="{{ route('workorder.find') }}">
+<meta name="workorder-delete-url" content="{{ route('workorder.delete') }}">
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function () {
-    function tambahBarisBarang(nomor = '', nama = '', qty = '', unit = '', pr = '') {
-        let nomorOtomatis = $("#tableBarang tr").length + 1;
-        $("#tableBarang").append(`
-            <tr>
-                <td>${nomor || nomorOtomatis}</td>
-                <td><input type="text" name="items[${nomorOtomatis}][nama_barang]" class="form-control" value="${nama}" required></td>
-                <td><input type="number" name="items[${nomorOtomatis}][qty]" class="form-control" value="${qty}" required></td>
-                <td><input type="text" name="items[${nomorOtomatis}][unit]" class="form-control" value="${unit}" required></td>
-                <td><input type="text" name="items[${nomorOtomatis}][nomor_pr]" class="form-control" value="${pr}"></td>
-                <td><button type="button" class="btn btn-sm btn-danger btnHapusBarang">Hapus</button></td>
-            </tr>
-        `);
-    }
-
-    //Tambah barang
-    $('#btnTambahBarang').click(function () {
-        tambahBarisBarang();
-    });
-
-    $(document).on('click', '.btnHapusBarang', function () {
-        $(this).closest('tr').remove();
-    });
-
-    // Fetch WO data if nomor_wo is provided
-    function fetchWOData(nomorWO) {
-        $.ajax({
-            url: "{{ route('workorder.find') }}",
-            type: "POST",
-            data: { nomor_wo: nomorWO, _token: "{{ csrf_token() }}" },
-            success: function (response) {
-                $("#nama_pemohon").val(response.nama_pemohon);
-                $("#departemen").val(response.departemen);
-                $("#tanggal_pembuatan").val(response.tanggal_pembuatan);
-                $("#target_selesai").val(response.target_selesai);
-                $("#deskripsi").val(response.deskripsi);
-                $("#status").val(response.status);
-                $("#tindakan").val(response.tindakan || ''); 
-                $("#saran").val(response.saran || ''); 
-
-                // Isi checkbox jenis pekerjaan
-                if (response.jenis_pekerjaan) {
-                    response.jenis_pekerjaan.forEach(function (jenis) {
-                        $("input[name='jenis_pekerjaan[]'][value='" + jenis + "']").prop('checked', true);
-                    });
-                }
-
-                $("#tableBarang").empty(); // Pastikan tabel barang dikosongkan dulu
-
-                if (response.items && response.items.length > 0) {
-                    response.items.forEach(function (item, index) {
-                        tambahBarisBarang(index + 1, item.nama_barang, item.qty, item.unit, item.nomor_pr || '');
-                    });
-                }
-
-                $("#woData").removeClass("d-none"); // Tampilkan data WO
-            },
-            error: function (xhr) {
-                alert(xhr.responseJSON.error);
-            }
-        });
-    }
-
-    // Reset form and disable inputs
-    function resetForm() {
-        $("#woData").addClass("d-none");
-        $("#nama_pemohon").attr("disabled", true).val('');
-        $("#departemen").attr("disabled", true).val('');
-        $("#tanggal_pembuatan").attr("disabled", true).val('');
-        $("#target_selesai").attr("disabled", true).val('');
-        $("#deskripsi").attr("disabled", true).val('');
-        $("input[name='jenis_pekerjaan[]']").attr("disabled", true).prop('checked', false);
-        $("#pekerjaan_others").attr("disabled", true).prop('checked', false);
-        $("#jenis_pekerjaan_lainnya").attr("disabled", true).val('');
-        $("#tindakan").val('');
-        $("#saran").val('');
-        $("#tableBarang").empty();
-    }
-
-    // Cari WO
-    $("#btnCariWO").click(function () {
-        var nomorWO = $("#nomor_wo").val();
-
-        if (nomorWO === "") {
-            alert("Masukkan Nomor WO terlebih dahulu!");
-            return;
-        }
-
-        resetForm();
-        fetchWOData(nomorWO);
-    });
-
-    // Tombol Edit
-    $("#btn-edit").click(function () {
-        // Aktifkan input yang sebelumnya disabled atau readonly
-        $("#nama_pemohon").removeAttr("disabled");
-        $("#departemen").removeAttr("disabled");
-        $("#tanggal_pembuatan").removeAttr("disabled");
-        $("#target_selesai").removeAttr("disabled");
-        $("#deskripsi").removeAttr("disabled");
-
-        // Aktifkan checkbox jenis pekerjaan
-        $("input[name='jenis_pekerjaan[]']").removeAttr("disabled");
-        $("#pekerjaan_others").removeAttr("disabled");
-        $("#jenis_pekerjaan_lainnya").removeAttr("disabled");
-
-        // Beri efek visual agar terlihat bisa diedit
-        $("#nama_pemohon, #departemen, #tanggal_pembuatan, #target_selesai, #deskripsi").addClass("border-blue-500");
-    });
-
-    // Tombol hapus
-    $("#btn-hapus").click(function () {
-        let nomorWO = $("#nomor_wo").val();
-        if (!nomorWO) {
-            alert("Masukkan Nomor WO terlebih dahulu!");
-            return;
-        }
-
-        if (confirm("Apakah Anda yakin ingin menghapus WO ini?")) {
-            $.ajax({
-                url: "{{ route('workorder.delete') }}",
-                type: "POST",
-                data: {
-                    nomor_wo: nomorWO,
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function (response) {
-                    alert(response.success);
-                    location.reload();
-                },
-                error: function (xhr) {
-                    alert(xhr.responseJSON.error);
-                }
-            });
-        }
-    });
-
-    // Check if nomor_wo is provided and fetch data
-    var nomorWO = $("#nomor_wo").val();
-    if (nomorWO) {
-        fetchWOData(nomorWO);
-    }
-});
-</script>
+<script src="{{ asset('js/workorder_update.js') }}"></script>
 
 @endsection
