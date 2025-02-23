@@ -105,6 +105,11 @@ class WorkOrderController extends Controller
             'items.*.qty' => 'required|integer',
             'items.*.unit' => 'required|string',
             'items.*.nomor_pr' => 'nullable|string',
+            'nama_pemohon' => 'required|string|max:255',
+            'departemen' => 'required|string',
+            'tanggal_pembuatan' => 'required|date',
+            'target_selesai' => 'required|date',
+            'deskripsi' => 'required|string',
         ]);
 
         $workOrder = WorkOrder::where('nomor_wo', $request->nomor_wo)->firstOrFail();
@@ -112,6 +117,11 @@ class WorkOrderController extends Controller
         // Update data utama WO
         $workOrder->update([
             'status' => $request->status,
+            'nama_pemohon' => $request->nama_pemohon,
+            'departemen' => $request->departemen,
+            'tanggal_pembuatan' => $request->tanggal_pembuatan,
+            'target_selesai' => $request->target_selesai,
+            'deskripsi' => $request->deskripsi,
         ]);
 
         // Hapus entri sebelumnya di tabel work_order_updates
