@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\WorkOrderStatusController;
 
 // Route untuk halaman utama
 Route::get('/', function () {
@@ -23,10 +24,12 @@ Route::prefix('workorder')->group(function () {
     // Route untuk memproses update data Work Order
     Route::patch('/update', [WorkOrderController::class, 'update'])->name('workorder.update');
 
-    // Route sementara untuk halaman status Work Order (akan diganti dengan controller nantinya)
-    Route::get('/status', function () {
-        return "Halaman Status WO"; // Placeholder sementara
-    })->name('workorder.status');
+    // Route untuk halaman status Work Order 
+    // Route::get('/status', function () {
+    //     return "Halaman Status WO"; // Placeholder sementara
+    // })->name('workorder.status');
+
+    Route::get('/status', [WorkOrderStatusController::class, 'index'])->name('workorder.status');
 
     // Route untuk mencari Work Order berdasarkan nomor WO (digunakan untuk AJAX search)
     Route::post('/find', [WorkOrderController::class, 'find'])->name('workorder.find');
@@ -36,3 +39,6 @@ Route::prefix('workorder')->group(function () {
     
 
 });
+
+
+
